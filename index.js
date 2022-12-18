@@ -125,7 +125,7 @@ client.on(Events.MessageCreate, async message => {
 		let randomWord = cookieWords[Math.floor(Math.random() * cookieWords.length)];
 		await message.channel.send(`A Cookie Catch has started! Send the word: \`${randomWord}\` anywhere in this server! The person who sends the most wins some gifts! Y'all have 1 minute!`)
 		const filter = m => m.content.toLowerCase().includes(randomWord.toLowerCase());
-		const collector = message.channel.createMessageCollector({ filter, time: 6000 });
+		const collector = message.channel.createMessageCollector({ filter, time: 60000 });
 
 		collector.on('collect', m => {
 			catchers[message.guild.id].caught[m.author.id] = (catchers[message.guild.id].caught[m.author.id] == undefined) ? 1 : catchers[message.guild.id].caught[m.author.id] + 1
