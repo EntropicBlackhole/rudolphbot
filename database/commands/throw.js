@@ -8,6 +8,10 @@ module.exports = {
 		.setName('throw')
 		.setDescription('Throws a snowball! A snowfight must have started though!'),
 	async execute(interaction, client) {
-		await interaction.reply('');
+		interaction.deferReply();
+		const snowfights = JSON.parse(fs.readFileSync('./database/misc/snowfights.json'))
+		if ([{}, undefined].includes(snowfights[interaction.guild.id])) return interaction.reply('There has yet to be a snowfight in this server! Start one with `/snowfight`!');
+		let allMembers = await message.guild.members.fetch()
+		console.log(allMembers)
 	},
 };

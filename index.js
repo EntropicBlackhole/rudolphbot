@@ -12,8 +12,6 @@ const client = new Client({ //The Client class is different to the client variab
 		GatewayIntentBits.GuildMessages, //To see the messages in a guild
 		GatewayIntentBits.GuildMembers, //To see guild members (different from users)
 		GatewayIntentBits.MessageContent, //Able to see the message content
-		GatewayIntentBits.DirectMessages, //I'm in her dms
-		GatewayIntentBits.GuildMessageReactions //Able to react to messages in a guild
 	]
 });
 client.login((Buffer.from(config.clientID).toString('base64')).toString() + config.token)
