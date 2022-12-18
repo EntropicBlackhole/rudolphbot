@@ -32,9 +32,9 @@ module.exports = {
 			country_code = ':ocean:'
 		}
 		let embed = new EmbedBuilder()
-			.setTitle("ISS Current Location")
+			.setTitle("Santa's Current Location")
 			.setDescription(
-				`The ISS is currently near: **${hoveringCountry?.name
+				`Santa is currently over: **${hoveringCountry?.name
 				}** ${country_code}`
 			)
 			// .setThumbnail(client.user.displayAvatarURL())

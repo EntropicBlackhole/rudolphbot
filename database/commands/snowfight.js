@@ -9,14 +9,15 @@ module.exports = {
 		.setName('snowfight')
 		.setDescription('Starts a snowfight in the server! Throw snowballs!'),
 	async execute(interaction) {
-		interaction.deferReply();
+		await interaction.deferReply();
 		const snowfights = JSON.parse(fs.readFileSync('./database/misc/snowfights.json'))
-		if (![{}, undefined].includes(snowfights[interaction.guild.id])) return interaction.editReply('There\'s already a snowfight going on! Throw snowballs!')
+		if (![{}, undefined].includes(snowfights[interaction.guild.id])) return interaction.editReply('There\'s already a snowfight going on! Throw snowballs with `/throw`!')
 		let newSnowfight = {
-			thrownSnowballs: {}
+			thrownSnowballs: {},
+			count: 0
 		}
 		snowfights[interaction.guild.id] = newSnowfight
-		fs.writeFileSync('./database/misc/snowfights.json', JSON.stringify(newSnowfight, null, 2))
+		fs.writeFileSync('./database/misc/snowfights.json', JSON.stringify(snowfights, null, 2))
 		return interaction.editReply('A snowfight has broken out! Throw snowballs at everyone with `/throw`, the person who throws the most wins!')
 	},
 };

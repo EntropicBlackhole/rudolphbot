@@ -1,10 +1,11 @@
 const fs = require('node:fs'); //fs constant to read/write files
 const path = require('node:path'); //path handler
-const { Client, Events, GatewayIntentBits, Routes, REST, Collection, ButtonBuilder, ActionRowBuilder, ButtonStyle } = require("discord.js");
+const { Client, Events, GatewayIntentBits, Routes, REST, Collection, EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } = require("discord.js");
 // ^ are all the things im importing from discord.js
 const config = require("./database/bot/config.json"); //The config file, here I keep the token and the ID of the bot
+const functions = require("./database/bot/functions");
 const talkedRecently = new Set(); //This is for cooldowns if youre doing message based commands instead of / commands
-
+const cookieWords = ['xmas', 'cookie', '25', 'elves', 'red', 'green', 'milk', 'claus']
 //Setting up the client with the required intents:
 const client = new Client({ //The Client class is different to the client variable, everything here is case sense
 	intents: [ //Intents array
@@ -103,7 +104,58 @@ client.on(Events.InteractionCreate, async interaction => { //executing commands
 	}
 });
 
-client.on(Events.MessageCreate, async message => { }); //This will listen for any messages from the server
+client.on(Events.MessageCreate, async message => {
+	if (message.author.bot) return;
+	const catchers = JSON.parse(fs.readFileSync('./database/misc/cookie_catchers.json'))
+	if (catchers[message.guild.id] == undefined)
+		catchers[message.guild.id] = {
+			count: 0,
+			hasStarted: false,
+			caught: {}
+		}
+	if (catchers[message.guild.id].caught[message.author.id] == undefined) catchers[message.guild.id].caught[message.author.id] = 0;
+	if (catchers[message.guild.id].hasStarted) return
+
+	catchers[message.guild.id].count += 1;
+	fs.writeFileSync('./database/misc/cookie_catchers.json', JSON.stringify(catchers, null, 2));
+	if (catchers[message.guild.id].count > 49) {
+		catchers[message.guild.id].hasStarted = true;
+		fs.writeFileSync('./database/misc/cookie_catchers.json', JSON.stringify(catchers, null, 2));
+
+		let randomWord = cookieWords[Math.floor(Math.random() * cookieWords.length)];
+		await message.channel.send(`A Cookie Catch has started! Send the word: \`${randomWord}\` anywhere in this server! The person who sends the most wins some gifts! Y'all have 1 minute!`)
+		const filter = m => m.content.toLowerCase().includes(randomWord.toLowerCase());
+		const collector = message.channel.createMessageCollector({ filter, time: 6000 });
+
+		collector.on('collect', m => {
+			catchers[message.guild.id].caught[m.author.id] = (catchers[message.guild.id].caught[m.author.id] == undefined) ? 1 : catchers[message.guild.id].caught[m.author.id] + 1
+			fs.writeFileSync('./database/misc/cookie_catchers.json', JSON.stringify(catchers, null, 2));
+		});
+		
+		collector.on('end', async collected => {
+			const gifts = JSON.parse(fs.readFileSync('./database/misc/gifts.json'))
+			const sortable = Object.fromEntries(Object.entries(catchers[message.guild.id].caught).sort(([, a], [, b]) => a - b));
+			let description = '';
+			for (player in sortable) description += `${client.guilds.cache.get(message.guild.id).members.cache.get(player).user.username}: ${sortable[player]}`
+			const leaderboardEmbed = new EmbedBuilder()
+				.setTitle('Cookie Catch leaderboard')
+				.setDescription(description)
+				.setColor(functions.randomColor())
+				.setTimestamp()
+				.setFooter({ text: "Please report any bugs! Thanks! ^^", iconURL: client.user.avatarURL() });
+			delete catchers[message.guild.id];
+			if (gifts[Object.keys(sortable)[0]] == undefined) {
+				gifts[Object.keys(sortable)[0]] = 0;
+				fs.writeFileSync('./database/misc/gifts.json', JSON.stringify(gifts, null, 2));
+			}
+			let randomAmtOfGifts = Math.round(Math.random() * 5) + 1;
+			gifts[Object.keys(sortable)[0]] += randomAmtOfGifts;
+			fs.writeFileSync('./database/misc/cookie_catchers.json', JSON.stringify(catchers, null, 2));
+			fs.writeFileSync('./database/misc/gifts.json', JSON.stringify(gifts, null, 2));
+			await message.channel.send({ content: `Cookie Catch has ended! ${client.guilds.cache.get(message.guild.id).members.cache.get(Object.keys(sortable)[0]).user.username} wins and gets \`${randomAmtOfGifts}\` gift${randomAmtOfGifts != 1 ? 's' : ''}`, embeds: [leaderboardEmbed] })
+		})
+	}
+}); //This will listen for any messages from the server
 //done
 
 //Santa tracker
