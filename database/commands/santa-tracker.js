@@ -1,6 +1,6 @@
 const countries = require("../misc/countries_info.json");
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
-const fetch = require("node-fetch");
+const fetch = import("node-fetch");
 const functions = require('../bot/functions');
 let url = "https://api.wheretheiss.at/v1/satellites/25544";
 let coordsURL = "https://api.wheretheiss.at/v1/coordinates/";

@@ -1,7 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const functions = require('../bot/functions')
 const fs = require('fs');
-const { random } = require('random-memes');
 
 module.exports = {
 	name: "Throw",
