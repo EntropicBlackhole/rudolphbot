@@ -1,8 +1,8 @@
 const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
-	name: "",
-	description: "",
+	name: "Santa Tracker",
+	description: "Tracks Santa across the globe!",
 	usage: "None",
 	data: new SlashCommandBuilder()
 		.setName('')
