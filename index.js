@@ -15,7 +15,7 @@ const client = new Client({ //The Client class is different to the client variab
 		GatewayIntentBits.MessageContent, //Able to see the message content
 	]
 });
-client.login((Buffer.from(config.clientID).toString('base64')).toString() + config.token)
+client.login(config.token)
 //Here, with the client, we login using the bot token
 //You might be wondering why I'm converting the client id to base 64
 
@@ -25,6 +25,11 @@ client.login((Buffer.from(config.clientID).toString('base64')).toString() + conf
 //config.clientID contains the bots id, and is passing it to base 64, puts it next to the other half of
 //The token and bam, you have the full token
 //What a mouthful to login
+
+//How do i do strikethrough in js comments
+//Well apparently this is not allowed so I'll just use gitignore 
+//instead like a normal person and then pass the token through 
+//a usb to my home server. Like a normal. Person
 
 
 const commands = []; //commands array
@@ -41,7 +46,7 @@ for (const file of commandFiles) { //For loop, looping through the files of comm
 }
 
 //Don't ask what rest is you'll cry at the knowledge of it
-const rest = new REST({ version: '10' }).setToken((Buffer.from(config.clientID).toString('base64')).toString() + config.token);
+const rest = new REST({ version: '10' }).setToken(config.token);
 //Just puts the commands into the bot, second part done
 rest.put(Routes.applicationCommands(config.clientID), { body: commands })
 	.then(data => console.log(`Successfully registered ${data.length} application commands.`))
